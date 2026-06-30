@@ -1,19 +1,27 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
-  "name": "friday-feynmanpi-com",
-  "compatibility_date": "2026-05-03",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "images": {
-    "binding": "IMAGES"
-  },
-  "observability": {
-    "enabled": true
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+	"name": "friday-feynmanpi-com",
+	"compatibility_date": "2026-05-03",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "friday-users",
+			"database_id": "e2d20c3a-13bf-4237-8da0-96ce356d29f0",
+			"migrations_dir": "migrations"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
 }

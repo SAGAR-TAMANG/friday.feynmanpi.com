@@ -54,7 +54,7 @@ export default function Home() {
     const loadingId = toast.loading(`Locating latest ${label} version...`)
     try {
       const res = await fetch(`/api/download?os=${os}&urlOnly=true`)
-      const data = await res.json()
+      const data = (await res.json()) as { error?: string; url?: string }
 
       if (!res.ok || data.error) {
         toast.error('Download not ready yet', {
@@ -68,7 +68,7 @@ export default function Home() {
         description: 'Your download will begin shortly.',
         id: loadingId,
       })
-      window.location.href = data.url
+      window.location.href = data.url as string
     } catch {
       toast.error('Download failed', {
         description: 'A network error occurred.',
