@@ -127,9 +127,9 @@ export default function Home() {
                   1.3k+ stars on GitHub
                 </Link>
               </div>
-              <h1 className="!font-playfair font-normal leading-[0.9]">
+              <h1 className="!font-playfair font-normal leading-[0.1]">
                 <span className="block text-6xl sm:text-7xl lg:text-8xl">
-                  an <span className="italic">ai assistant</span>
+                  an <span className="italic tracking-[-6px]">ai assistant</span>
                 </span>
                 <span className="mt-3 block text-xl sm:text-2xl lg:text-3xl text-muted-foreground">
                   that lives on your computer.
@@ -161,10 +161,10 @@ export default function Home() {
             <div className="mb-4">
               <Badge variant="outline">Just talk to it</Badge>
             </div>
-            <h2 className="!font-playfair font-normal text-4xl sm:text-5xl mb-4 leading-tight">
+            <h2 className="!font-playfair font-normal text-4xl sm:text-5xl mb-4 leading-tight tracking-[-2px]">
               say it out <span className='italic'>loud</span>.
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <p className="text-muted-foreground tracking-tight max-w-xl mx-auto">
               friday joins a livekit room, listens to your mic, and answers in a natural voice.
             </p>
           </div>
@@ -218,20 +218,20 @@ export default function Home() {
           <div className="mb-6">
             <Badge variant="secondary">Get friday</Badge>
           </div>
-          <h2 className="!font-playfair font-normal text-4xl sm:text-5xl mb-6 leading-tight">
+          <h2 className="!font-playfair font-normal text-4xl sm:text-5xl mb-6 leading-tight tracking-[-2px]">
             built for your <span className='italic'>desktop</span>.
           </h2>
-          <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-muted-foreground tracking-tight max-w-xl mx-auto mb-12">
             friday runs as a native app on both Windows and macOS. grab your build below — if a platform isn&apos;t live yet, we&apos;ll let you know.
           </p>
           <div className="grid md:grid-cols-2 gap-6 text-left">
             <Card className={`relative overflow-hidden transition-colors ${primary === 'windows' ? 'border-primary/50 ring-1 ring-primary/30 bg-gradient-to-b from-secondary/30 to-transparent' : ''}`}>
               <CardContent className="pt-6">
                 <div className="mb-4 flex items-start justify-between">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary">
-                    <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.05 13.5H6.95m10.1 0l-.5-5h-9.1l-.5 5M6.5 19h11l.5-5H6l.5 5z" strokeWidth="1.5" stroke="currentColor" fill="none" />
-                    </svg>
+                  <span className="flex h-14 w-14 items-center justify-center rounded-xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-windows" viewBox="0 0 16 16">
+  <path d="M6.555 1.375 0 2.237v5.45h6.555zM0 13.795l6.555.933V8.313H0zm7.278-5.4.026 6.378L16 16V8.395zM16 0 7.33 1.244v6.414H16z"/>
+</svg>
                   </span>
                   {detected === 'windows' && <Badge className="text-[10px]">your device</Badge>}
                 </div>
@@ -252,10 +252,11 @@ export default function Home() {
             <Card className={`relative overflow-hidden transition-colors ${primary === 'mac' ? 'border-primary/50 ring-1 ring-primary/30 bg-gradient-to-b from-secondary/30 to-transparent' : ''}`}>
               <CardContent className="pt-6">
                 <div className="mb-4 flex items-start justify-between">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary">
-                    <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17 2H7c-1.1 0-2 .9-2 2v20c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" strokeWidth="0" />
-                    </svg>
+                  <span className="flex h-14 w-14 items-center justify-center rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-apple" viewBox="0 0 16 16">
+  <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516s1.52.087 2.475-1.258.762-2.391.728-2.43m3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422s1.675-2.789 1.698-2.854-.597-.79-1.254-1.157a3.7 3.7 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56s.625 1.924 1.273 2.796c.576.984 1.34 1.667 1.659 1.899s1.219.386 1.843.067c.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758q.52-1.185.473-1.282"/>
+  <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516s1.52.087 2.475-1.258.762-2.391.728-2.43m3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422s1.675-2.789 1.698-2.854-.597-.79-1.254-1.157a3.7 3.7 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56s.625 1.924 1.273 2.796c.576.984 1.34 1.667 1.659 1.899s1.219.386 1.843.067c.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758q.52-1.185.473-1.282"/>
+</svg>
                   </span>
                   {detected === 'mac' && <Badge className="text-[10px]">your device</Badge>}
                 </div>
@@ -280,10 +281,10 @@ export default function Home() {
       {/* CTA */}
       <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border-none px-6 py-16 sm:px-12 text-center">
+          <div className="relative overflow-hidden rounded-3xl border-none px-6 py-16 sm:px-12 text-center ">
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/10 to-transparent" />
             <div className="relative">
-              <h2 className="!font-playfair font-normal text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
+              <h2 className="!font-playfair font-normal text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight tracking-[-2px]">
                 completely <span className='italic'>free</span>.
               </h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -322,7 +323,7 @@ export default function Home() {
                 <Image src="/icon.svg" alt="Logo" width={24} height={24} className='bg-gray-100/30 rounded-lg' />
                 <span className="font-semibold">friday</span>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 your ai assistant that lives on your computer.
               </p>
             </div>
