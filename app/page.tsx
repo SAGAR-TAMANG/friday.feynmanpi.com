@@ -79,96 +79,97 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Navigation */}
-      <nav className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center justify-center gap-2">
-              {/* <Image src="/icon.svg" alt="Logo" width={24} height={24} className='bg-gray-100/30 rounded-lg' /> */}
-              <span className="text-lg font-semibold lowercase tracking-tighter font-playfair italic text-start text-top">friday</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <Link
-                href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo"
-                className="hidden sm:inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                target='_blank'
-              >
-                <Github className="w-4 h-4" />
-                Star on GitHub
-              </Link>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm" className='lowercase' asChild>
-                  <Link href="https://cal.com/sagar-tamang" target="_blank" rel="noopener noreferrer">
-                    Talk to me
-                  </Link>
-                </Button>
+      {/* Hero — full-screen height on every device; the video itself is a
+          shorter, vertically-centered band on mobile so more of it is visible. */}
+      <section className="relative min-h-svh w-full overflow-hidden">
+        {/* Blurred full-bleed backdrop — fills the empty areas around the
+            centered mobile video band so it isn't flat black. */}
+        <video
+          playsInline
+          autoPlay
+          muted
+          loop
+          preload='auto'
+          aria-hidden='true'
+          className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+        >
+          <source src="/scene-01.mp4" type="video/mp4" />
+        </video>
+
+        {/* Background video — centered ~60svh band on mobile, full-bleed from sm up */}
+        <video
+          playsInline
+          autoPlay
+          muted
+          loop
+          preload='auto'
+          aria-hidden='true'
+          className="absolute inset-x-0 top-1/2 h-[60svh] w-full -translate-y-1/2 object-cover sm:top-0 sm:h-full sm:translate-y-0"
+        >
+          <source src="/scene-01.mp4" type="video/mp4" />
+        </video>
+        {/* Legibility overlay + fade into the page below */}
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" />
+
+        {/* Overlay navigation */}
+        <nav className="absolute inset-x-0 top-0 z-30">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center justify-center gap-2">
+                {/* <Image src="/icon.svg" alt="Logo" width={24} height={24} className='bg-gray-100/30 rounded-lg' /> */}
+                <span className="text-lg font-semibold lowercase tracking-tighter font-playfair italic text-start text-top">friday</span>
+              </div>
+              <div className="flex items-center gap-6">
+                <Link
+                  href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo"
+                  className="hidden sm:inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  target='_blank'
+                >
+                  <Github className="w-4 h-4" />
+                  Star on GitHub
+                </Link>
+                <div className="flex items-center gap-3">
+                  <Button variant="outline" size="sm" className='lowercase backdrop-blur' asChild>
+                    <Link href="https://cal.com/sagar-tamang" target="_blank" rel="noopener noreferrer">
+                      Talk to me
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden py-20 sm:py-28 border-b border-border">
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          {/* Centered video player — width tracks the nav, height capped at ~80vh */}
-          <div className="relative mx-auto mb-12 w-full">
-            {/* Blurred duplicate behind — ambient glow / halo */}
-            <video
-              playsInline
-              autoPlay
-              muted
-              loop
-              preload='auto'
-              aria-hidden='true'
-              className="pointer-events-none absolute inset-0 -z-10 h-full w-full scale-105 rounded-3xl object-cover opacity-40 blur-2xl"
-            >
-              <source src="/scene-01.mp4" type="video/mp4" />
-            </video>
-
-            {/* Main framed player */}
-            <div className="overflow-hidden rounded-2xl border border-border bg-black shadow-2xl ring-1 ring-white/5">
-              <video
-                playsInline
-                autoPlay
-                muted
-                loop
-                preload='auto'
-                className="mx-auto max-h-[80vh] w-full object-cover"
-              >
-                <source src="/scene-01.mp4" type="video/mp4" />
-              </video>
+        {/* Bottom-anchored content: oversized headline left, download right. */}
+        <div className="relative z-20 flex min-h-svh flex-col justify-end px-6 pb-12 sm:px-10 sm:pb-14 lg:px-16">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+            {/* Headline */}
+            <div className="max-w-xl text-left">
+              <p className="mb-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                meet f.r.i.d.a.y.
+              </p>
+              <h1 className="!font-playfair font-normal leading-[0.9]">
+                <span className="block text-6xl sm:text-7xl lg:text-8xl">
+                  an <span className="italic">ai assistant</span>
+                </span>
+                <span className="mt-3 block text-xl sm:text-2xl lg:text-3xl text-muted-foreground">
+                  that lives on your computer.
+                </span>
+              </h1>
             </div>
-          </div>
 
-          {/* Copy below the player */}
-          <div className="mx-auto max-w-4xl py-50">
-            <div className="mb-6">
-              <Badge variant="secondary" className="tracking-widest uppercase">
-                Meet F.R.I.D.A.Y.
-              </Badge>
-            </div>
-            <h1 className="!font-playfair text-5xl sm:text-6xl lg:text-7xl mb-6 font-normal leading-[1.05]">
-              an <span className='italic'>ai assistant</span> that lives on your <span className='italic'>computer</span>.
-            </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              friday listens to your voice, reasons with an LLM, and talks back —
-              <br className="hidden sm:block" />
-              wired to live tools so it can actually do things for you.
-            </p>
-            <div className="flex flex-col items-center justify-center gap-3">
+            {/* Download action */}
+            <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
               <Button size="lg" onClick={() => handleDownload(primary)} className="lowercase hover:cursor-pointer">
-                <Download className="mr-2 w-4 h-4" />
-                Download for {OS_LABEL[primary]}
+                <Download className="mr-2 h-4 w-4" />
+                download for {OS_LABEL[primary]}
               </Button>
-              <Button
-                size="sm"
-                variant="link"
+              <button
                 onClick={() => handleDownload(other)}
-                className="lowercase underline text-muted-foreground hover:text-foreground hover:cursor-pointer"
+                className="text-xs lowercase text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:cursor-pointer"
               >
-                Download for {OS_LABEL[other]} instead
-              </Button>
+                or download for {OS_LABEL[other]}
+              </button>
             </div>
           </div>
         </div>
