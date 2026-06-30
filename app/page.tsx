@@ -77,8 +77,29 @@ export default function Home() {
     }
   }
 
+  const appJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Friday',
+    alternateName: ['F.R.I.D.A.Y.', 'friday ai assistant'],
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Windows, macOS',
+    url: 'https://friday.feynmanpi.com',
+    description:
+      "Friday is a voice-first AI desktop assistant inspired by Tony Stark's F.R.I.D.A.Y. Talk to it, let it see your screen, search the web, and control your computer.",
+    image: 'https://friday.feynmanpi.com/og',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    author: { '@type': 'Person', name: 'Sagar Tamang', url: 'https://sagartamang.com' },
+    sameAs: ['https://github.com/SAGAR-TAMANG/friday-tony-stark-demo']
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd) }}
+      />
       {/* Hero — full-screen height on every device; the video itself is a
           shorter, vertically-centered band on mobile so more of it is visible. */}
       <section className="relative min-h-svh w-full overflow-hidden">
