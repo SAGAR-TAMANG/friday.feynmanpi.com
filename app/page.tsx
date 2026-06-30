@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowRight, Download, Github, Mic } from 'lucide-react'
+import { ArrowRight, Download, Github, Mail, Mic } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -93,7 +93,7 @@ export default function Home() {
           aria-hidden='true'
           className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
         >
-          <source src="/scene-01.mp4" type="video/mp4" />
+          <source src="/scene-01-medium-shorter.mp4" type="video/mp4" />
         </video>
 
         {/* Background video — centered ~60svh band on mobile, full-bleed from sm up */}
@@ -106,48 +106,27 @@ export default function Home() {
           aria-hidden='true'
           className="absolute inset-x-0 top-1/2 h-[60svh] w-full -translate-y-1/2 object-cover sm:top-0 sm:h-full sm:translate-y-0"
         >
-          <source src="/scene-01.mp4" type="video/mp4" />
+          <source src="/scene-01-medium-shorter.mp4" type="video/mp4" />
         </video>
         {/* Legibility overlay + fade into the page below */}
         <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" />
-
-        {/* Overlay navigation */}
-        <nav className="absolute inset-x-0 top-0 z-30">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center justify-center gap-2">
-                {/* <Image src="/icon.svg" alt="Logo" width={24} height={24} className='bg-gray-100/30 rounded-lg' /> */}
-                <span className="text-lg font-semibold lowercase tracking-tighter font-playfair italic text-start text-top">friday</span>
-              </div>
-              <div className="flex items-center gap-6">
-                <Link
-                  href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo"
-                  className="hidden sm:inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  target='_blank'
-                >
-                  <Github className="w-4 h-4" />
-                  Star on GitHub
-                </Link>
-                <div className="flex items-center gap-3">
-                  <Button variant="outline" size="sm" className='lowercase backdrop-blur' asChild>
-                    <Link href="https://cal.com/sagar-tamang" target="_blank" rel="noopener noreferrer">
-                      Talk to me
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
 
         {/* Bottom-anchored content: oversized headline left, download right. */}
         <div className="relative z-20 flex min-h-svh flex-col justify-end px-6 pb-12 sm:px-10 sm:pb-14 lg:px-16">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
             {/* Headline */}
             <div className="max-w-xl text-left">
-              <p className="mb-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                meet f.r.i.d.a.y.
-              </p>
+              <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs uppercase tracking-[0.3em] text-primary">
+                <span>meet f.r.i.d.a.y.</span>
+                <Link
+                  href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:underline hover:cursor-pointer transition-all hover:text-primary/80"
+                >
+                  1.3k+ stars on GitHub
+                </Link>
+              </div>
               <h1 className="!font-playfair font-normal leading-[0.9]">
                 <span className="block text-6xl sm:text-7xl lg:text-8xl">
                   an <span className="italic">ai assistant</span>
@@ -193,7 +172,7 @@ export default function Home() {
             {SAMPLE_PROMPTS.map((prompt) => (
               <div
                 key={prompt}
-                className="group flex items-start gap-3 rounded-xl border border-border bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card"
+                className="group flex items-center gap-3 rounded-xl border border-border bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card hover:cursor-pointer"
               >
                 <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <Mic className="h-4 w-4" />
@@ -301,7 +280,7 @@ export default function Home() {
       {/* CTA */}
       <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-card/40 px-6 py-16 sm:px-12 text-center">
+          <div className="relative overflow-hidden rounded-3xl border-none px-6 py-16 sm:px-12 text-center">
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/10 to-transparent" />
             <div className="relative">
               <h2 className="!font-playfair font-normal text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
@@ -311,11 +290,11 @@ export default function Home() {
                 no sign-in, no credit card. open source, MIT licensed.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
-                <Button size="lg" onClick={() => handleDownload(primary)} className="lowercase">
+                <Button size="lg" onClick={() => handleDownload(primary)} className="lowercase hover:cursor-pointer">
                   <Download className="w-4 h-4 mr-2" />
                   Download for {OS_LABEL[primary]}
                 </Button>
-                <Button size="lg" variant="outline" className="lowercase" asChild>
+                <Button size="lg" variant="outline" className="lowercase hover:cursor-pointer" asChild>
                   <Link href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo" target="_blank" rel="noopener noreferrer">
                     <Github className="w-4 h-4 mr-2" />
                     Star on github
@@ -360,16 +339,21 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Made by</h4>
+              <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <a href="mailto:build@sagartamang.com" className='hover:text-foreground transition-colors'>
+                    email me
+                  </a>
+                </li>
+                <li>
+                  <a href="https://cal.com/sagar-tamang" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Talk to me</a>
+                </li>
                 <li>
                   <a href="https://x.com/sagar_builds" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">X (sagar_builds)</a>
                 </li>
                 <li>
                   <a href="https://www.instagram.com/sagar_builds/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a>
-                </li>
-                <li>
-                  <a href="https://cal.com/sagar-tamang" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Talk to me</a>
                 </li>
               </ul>
             </div>
