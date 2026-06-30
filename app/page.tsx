@@ -1,30 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowRight, Download, Github, Mail } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, Download, Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
-// NOTE: windows download is gated behind the same waitlist for now.
-// to re-enable the windows-download flow later: re-add 'windows' as a usable
-// intent below, uncomment `handleWindowsDownload`, restore the dual buttons
-// in the hero / download / cta sections, and restore the `intent === 'windows'`
-// branches in the dialog (all commented out below — search for `WINDOWS_DOWNLOAD`).
-type Intent = 'windows' | 'mac-waitlist' | 'waitlist'
+type OS = 'windows' | 'mac'
 
 const SAMPLE_PROMPTS = [
   '"hey friday, what\'s in the news today?"',
@@ -35,79 +20,62 @@ const SAMPLE_PROMPTS = [
   '"friday, what\'s on my system right now?"',
 ]
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const OS_LABEL: Record<OS, string> = { windows: 'windows', mac: 'mac' }
+
+// Best-effort client-side OS detection. Prefers the modern User-Agent Client
+// Hints API and falls back to the (deprecated but widely supported)
+// navigator.platform / userAgent strings. Returns null when undetermined.
+function detectOS(): OS | null {
+  if (typeof navigator === 'undefined') return null
+  const uaData = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData
+  const hint = (uaData?.platform || navigator.platform || navigator.userAgent || '').toLowerCase()
+  if (hint.includes('win')) return 'windows'
+  if (hint.includes('mac') || hint.includes('darwin')) return 'mac'
+  return null
+}
 
 export default function Home() {
-  const [open, setOpen] = useState(false)
-  const [intent, setIntent] = useState<Intent>('waitlist')
-  const [email, setEmail] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  // null until detected on the client — avoids any SSR/hydration mismatch.
+  const [detected, setDetected] = useState<OS | null>(null)
 
-  const openGate = (next: Intent) => {
-    setIntent(next)
-    setEmail('')
-    setSubmitted(false)
-    setOpen(true)
-  }
+  useEffect(() => {
+    setDetected(detectOS())
+  }, [])
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const value = email.trim().toLowerCase()
-    if (!EMAIL_RE.test(value)) {
-      toast.error('Please enter a valid email address.')
-      return
-    }
-    setSubmitting(true)
+  // Default to Windows when detection is inconclusive.
+  const primary: OS = detected ?? 'windows'
+  const other: OS = primary === 'windows' ? 'mac' : 'windows'
+
+  // Resolves the latest build for the OS from the R2 bucket via /api/download.
+  // If that platform's build hasn't been uploaded yet, the route returns a
+  // friendly error which we surface in the toast — no download is started.
+  const handleDownload = async (os: OS) => {
+    const label = os === 'windows' ? 'Windows' : 'macOS'
+    const loadingId = toast.loading(`Locating latest ${label} version...`)
     try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: value, intent }),
-      })
+      const res = await fetch(`/api/download?os=${os}&urlOnly=true`)
       const data = await res.json()
+
       if (!res.ok || data.error) {
-        toast.error(data.error || 'Something went wrong. Try again.')
+        toast.error('Download not ready yet', {
+          description: data.error || `The ${label} build is not available yet.`,
+          id: loadingId,
+        })
         return
       }
-      setSubmitted(true)
-      if (intent === 'mac-waitlist' || intent === 'waitlist') {
-        toast.success("You're on the waitlist!", {
-          description: "We'll email you the moment friday is ready.",
-        })
-      }
+
+      toast.success('Thank you for downloading!', {
+        description: 'Your download will begin shortly.',
+        id: loadingId,
+      })
+      window.location.href = data.url
     } catch {
-      toast.error('A network error occurred.')
-    } finally {
-      setSubmitting(false)
+      toast.error('Download failed', {
+        description: 'A network error occurred.',
+        id: loadingId,
+      })
     }
   }
-
-  // WINDOWS_DOWNLOAD — uncomment when the windows build is ready to ship.
-  // const handleWindowsDownload = async () => {
-  //   const loadingId = toast.loading('Locating latest Windows version...')
-  //   try {
-  //     const res = await fetch('/api/download?os=windows&urlOnly=true')
-  //     const data = await res.json()
-  //     if (!res.ok || data.error) {
-  //       toast.error('Download not ready yet', {
-  //         description: data.error || 'The Windows build is not available yet — we have your email.',
-  //         id: loadingId,
-  //       })
-  //       return
-  //     }
-  //     toast.success('Thank you for downloading!', {
-  //       description: 'Your download will begin shortly.',
-  //       id: loadingId,
-  //     })
-  //     window.location.href = data.url
-  //   } catch {
-  //     toast.error('Download failed', {
-  //       description: 'A network error occurred.',
-  //       id: loadingId,
-  //     })
-  //   }
-  // }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -142,6 +110,32 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative overflow-hidden py-28 sm:py-40 border-b border-border">
+        {/* Blurred background video for large screens */}
+        <video
+          playsInline
+          autoPlay
+          muted
+          loop
+          poster='/helicopter-dystopian-poster.webp'
+          preload='metadata'
+          className="hidden lg:block absolute inset-0 w-full h-full object-cover blur-xl opacity-20 scale-110"
+        >
+          <source src="/scene-01.mp4" type="video/mp4" />
+        </video>
+
+        {/* Main clear video */}
+        <video
+          playsInline
+          autoPlay
+          muted
+          loop
+          poster='/helicopter-dystopian-poster.webp'
+          preload='metadata'
+          className="absolute inset-0 w-full h-full object-cover lg:max-w-6xl lg:mx-auto opacity-50 bg-black"
+        >
+          <source src="/scene-01.mp4" type="video/mp4" />
+        </video>
+
         <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-6">
             <Badge variant="secondary" className="tracking-widest uppercase">
@@ -156,25 +150,20 @@ export default function Home() {
             <br className="hidden sm:block" />
             wired to live tools so it can actually do things for you.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button size="lg" onClick={() => openGate('waitlist')} className="lowercase">
-              <Mail className="mr-2 w-4 h-4" />
-              Join the waitlist
-            </Button>
-            {/* WINDOWS_DOWNLOAD — uncomment when ready to ship windows builds.
-            <Button size="lg" onClick={() => openGate('windows')} className="lowercase">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <Button size="lg" onClick={() => handleDownload(primary)} className="lowercase hover:cursor-pointer">
               <Download className="mr-2 w-4 h-4" />
-              Download for windows
+              Download for {OS_LABEL[primary]}
             </Button>
-            <Button size="lg" variant="secondary" onClick={() => openGate('mac-waitlist')} className="lowercase">
-              <Mail className="mr-2 w-4 h-4" />
-              Join mac waitlist
+            <Button
+              size="sm"
+              variant="link"
+              onClick={() => handleDownload(other)}
+              className="lowercase underline text-muted-foreground hover:text-foreground hover:cursor-pointer"
+            >
+              Download for {OS_LABEL[other]} instead
             </Button>
-            */}
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">
-            free &amp; open source. windows &amp; mac builds coming soon.
-          </p>
         </div>
       </section>
 
@@ -269,7 +258,7 @@ export default function Home() {
       </section>
 
       {/* Demo */}
-      <section id="demo" className="py-20 sm:py-28 border-b border-border">
+      {/* <section id="demo" className="py-20 sm:py-28 border-b border-border">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="mb-4">
@@ -292,7 +281,7 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Platform */}
       <section id="download" className="py-20 sm:py-28 border-b border-border">
@@ -301,66 +290,53 @@ export default function Home() {
             <Badge variant="secondary">Get friday</Badge>
           </div>
           <h2 className="!font-playfair font-normal text-4xl sm:text-5xl mb-6 leading-tight">
-            coming soon to your <span className='italic'>desktop</span>.
+            built for your <span className='italic'>desktop</span>.
           </h2>
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-            both windows and macOS builds are in the oven. drop your email and we&apos;ll let you know the moment friday is ready for your machine.
+            friday runs as a native app on both Windows and macOS. grab your build below — if a platform isn&apos;t live yet, we&apos;ll let you know.
           </p>
-          <div className="flex justify-center">
-            <Card className="max-w-md w-full text-left">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-secondary rounded-lg mb-4 flex items-center justify-center">
-                  <Mail className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Windows &amp; macOS</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  One waitlist for both platforms. We&apos;ll email you the second your build is live.
-                </p>
-                <Button onClick={() => openGate('waitlist')} className='lowercase'>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Join the waitlist
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-          {/* WINDOWS_DOWNLOAD — uncomment the two-card grid when builds are ready.
           <div className="grid md:grid-cols-2 gap-6 text-left">
-            <Card>
+            <Card className={primary === 'windows' ? 'ring-1 ring-primary/40' : undefined}>
               <CardContent className="pt-6">
                 <div className="w-16 h-16 bg-secondary rounded-lg mb-4 flex items-center justify-center">
                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.05 13.5H6.95m10.1 0l-.5-5h-9.1l-.5 5M6.5 19h11l.5-5H6l.5 5z" strokeWidth="1.5" stroke="currentColor" fill="none" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Windows</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xl font-semibold">Windows</h3>
+                  {detected === 'windows' && <Badge variant="outline" className="text-[10px]">your device</Badge>}
+                </div>
                 <p className="text-muted-foreground text-sm mb-4">
                   Windows 10 and newer. GPU acceleration where supported.
                 </p>
-                <Button onClick={() => openGate('windows')} className='lowercase'>
+                <Button onClick={() => handleDownload('windows')} className='lowercase'>
                   <Download className="w-4 h-4 mr-2" />
                   Download
                 </Button>
               </CardContent>
             </Card>
-            <Card>
+            <Card className={primary === 'mac' ? 'ring-1 ring-primary/40' : undefined}>
               <CardContent className="pt-6">
                 <div className="w-16 h-16 bg-secondary rounded-lg mb-4 flex items-center justify-center">
                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17 2H7c-1.1 0-2 .9-2 2v20c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" strokeWidth="0" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">macOS</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xl font-semibold">macOS</h3>
+                  {detected === 'mac' && <Badge variant="outline" className="text-[10px]">your device</Badge>}
+                </div>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Coming soon — Intel &amp; Apple Silicon. Join the waitlist for early access.
+                  Intel &amp; Apple Silicon. Native, with offline processing.
                 </p>
-                <Button variant="secondary" onClick={() => openGate('mac-waitlist')} className='lowercase'>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Join waitlist
+                <Button variant="secondary" onClick={() => handleDownload('mac')} className='lowercase'>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
                 </Button>
               </CardContent>
             </Card>
           </div>
-          */}
         </div>
       </section>
 
@@ -374,9 +350,9 @@ export default function Home() {
             no sign-in, no credit card. open source, MIT licensed.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
-            <Button size="lg" onClick={() => openGate('waitlist')} className="lowercase">
-              <Mail className="w-4 h-4 mr-2" />
-              Join the waitlist
+            <Button size="lg" onClick={() => handleDownload(primary)} className="lowercase">
+              <Download className="w-4 h-4 mr-2" />
+              Download for {OS_LABEL[primary]}
             </Button>
             <Button size="lg" variant="outline" className="lowercase" asChild>
               <Link href="https://github.com/SAGAR-TAMANG/friday-tony-stark-demo" target="_blank" rel="noopener noreferrer">
@@ -386,12 +362,6 @@ export default function Home() {
               </Link>
             </Button>
           </div>
-          {/* WINDOWS_DOWNLOAD — uncomment when ready to ship windows builds.
-          <Button size="lg" onClick={() => openGate('windows')} className="lowercase">
-            <Download className="w-4 h-4 mr-2" />
-            Download now
-          </Button>
-          */}
           <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
             <span>support the project by following me on</span>
             <a href="https://x.com/sagar_builds" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline underline-offset-4">X</a>
@@ -457,94 +427,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Email gate dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="!font-playfair text-2xl font-normal italic lowercase">
-              {submitted
-                ? "you're on the waitlist."
-                : 'join the friday waitlist.'}
-            </DialogTitle>
-            <DialogDescription className="lowercase">
-              {submitted
-                ? "we'll email you the moment friday is ready for your machine."
-                : 'drop your email and we\'ll let you know the second windows or macOS goes live.'}
-            </DialogDescription>
-          </DialogHeader>
-          {/* WINDOWS_DOWNLOAD — original windows/mac branched titles. restore when the
-              windows download button is brought back in handleWindowsDownload + hero.
-          <DialogTitle className="!font-playfair text-2xl font-normal italic lowercase">
-            {intent === 'windows'
-              ? submitted
-                ? 'thank you. your download is ready.'
-                : 'one quick step.'
-              : submitted
-                ? "you're on the waitlist."
-                : 'join the mac waitlist.'}
-          </DialogTitle>
-          <DialogDescription className="lowercase">
-            {intent === 'windows'
-              ? submitted
-                ? "click below to start the download. we'll only email you about major releases."
-                : 'drop your email and we\'ll show you the download link.'
-              : submitted
-                ? "we'll email you the moment macOS is ready."
-                : 'macOS is in the oven. leave your email and we\'ll let you know first.'}
-          </DialogDescription>
-          */}
-
-          {!submitted && (
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="lowercase">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  autoFocus
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="lowercase"
-                />
-              </div>
-              <DialogFooter>
-                <Button type="submit" disabled={submitting} className="lowercase w-full sm:w-auto">
-                  {submitting ? 'sending...' : 'join waitlist'}
-                </Button>
-                {/* WINDOWS_DOWNLOAD — windows had a different label here.
-                {submitting
-                  ? 'sending...'
-                  : intent === 'windows'
-                    ? 'continue to download'
-                    : 'join waitlist'}
-                */}
-              </DialogFooter>
-            </form>
-          )}
-
-          {submitted && (
-            <DialogFooter>
-              <Button variant="secondary" onClick={() => setOpen(false)} className="lowercase w-full sm:w-auto">
-                Close
-              </Button>
-            </DialogFooter>
-          )}
-          {/* WINDOWS_DOWNLOAD — restore this branch (and uncomment handleWindowsDownload)
-              when the windows installer is ready to ship.
-          {submitted && intent === 'windows' && (
-            <DialogFooter>
-              <Button onClick={handleWindowsDownload} className="lowercase w-full sm:w-auto">
-                <Download className="w-4 h-4 mr-2" />
-                Download for windows
-              </Button>
-            </DialogFooter>
-          )}
-          */}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
