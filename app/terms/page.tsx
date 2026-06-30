@@ -113,11 +113,19 @@ export default function TermsPage() {
         </P>
       </Section>
 
-      <Section title="8. Software license">
+      <Section title="8. Software and intellectual property">
         <P>
-          The Friday desktop application is open-source software made available under the MIT
-          License. These Terms govern your use of the hosted Service (including the website and
-          account features); the MIT License governs your rights in the software’s source code.
+          The Friday desktop application and the Service are proprietary and owned by Sagar Tamang
+          (feynmanpi). We grant you a personal, non-exclusive, non-transferable, revocable license to
+          download and use Friday for its intended purpose, subject to these Terms. You may not copy,
+          modify, distribute, sell, rent, sublicense, reverse-engineer, or create derivative works
+          from the Service except to the extent that applicable law expressly permits. All rights not
+          expressly granted to you are reserved by us.
+        </P>
+        <P>
+          A separate, open-source edition of Friday is published under the MIT License on GitHub.
+          That license governs only that public source code — it does not apply to this Service, the
+          desktop builds distributed here, or their additional features.
         </P>
       </Section>
 

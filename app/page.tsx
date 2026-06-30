@@ -370,7 +370,7 @@ export default function Home() {
             <p className="text-center text-sm text-muted-foreground">
               © 2026 friday. MIT licensed.
               <br />
-              Built by <a href="https://x.com/sagar_builds" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline underline-offset-4">sagar_builds</a> for the World.
+              Built by <a href="https://sagartamang.com/" target="_blank" className="hover:text-foreground transition-colors underline underline-offset-4">Sagar Tamang (@sagar_builds)</a> for the World.
             </p>
           </div>
         </div>

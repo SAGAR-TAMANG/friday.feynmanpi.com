@@ -41,7 +41,7 @@ export function LegalShell({
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:justify-between sm:px-6">
-          <p>© 2026 friday. MIT licensed.</p>
+          <p>© 2026 friday. all rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/privacy" className="transition-colors hover:text-foreground">
               privacy
